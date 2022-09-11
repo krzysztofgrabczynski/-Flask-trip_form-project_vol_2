@@ -9,7 +9,7 @@
   <body>
     {% include "menu.html" %}
 
-    {% with messages = get_flash_messages() %}
+    {% with messages = get_flashed_messages() %}
       {% for message in messages %}
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
           <strong>{{ message }}</strong>

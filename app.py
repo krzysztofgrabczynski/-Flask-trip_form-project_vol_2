@@ -1,7 +1,7 @@
-from flask import Flask, flash
+from flask import Flask, flash, render_template, redirect
 
 app = Flask(__name__)
-
+app.secret_key = 'secret_key'
 
 @app.route('/app_init')
 def app_init():
@@ -9,7 +9,8 @@ def app_init():
 
 @app.route('/')
 def index():
-    return 'not implemented'
+    flash("sss")
+    return render_template('index.html')
 
 @app.route('/login')
 def login():
