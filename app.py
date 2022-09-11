@@ -9,7 +9,6 @@ def app_init():
 
 @app.route('/')
 def index():
-    flash("sss")
     return render_template('index.html')
 
 @app.route('/login')
