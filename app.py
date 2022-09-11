@@ -1,7 +1,26 @@
-from flask import Flask, flash, render_template, redirect
+from flask import Flask, flash, render_template, redirect, g
+import sqlite3
 
 app = Flask(__name__)
+# secret key is needed to correct work of flashed messages
 app.secret_key = 'secret_key'
+
+# database connection
+app.info = {'db_file':'C:/Users/Krzysiu/Desktop/Python/Python_Flask/Trip_udea_form_exercise_vol_2/data/tripdb.db'}
+
+def get_db():
+    if not hasattr(g, 'sqlite_db'):
+        conn = sqlite3.connect(app.info['db_file'])
+        conn.row_factory = sqlite3.Row
+        g.sqlite_db = conn
+        return g.sqlite_db
+
+@app.teardown_appcontext
+def close_db():
+    if hasattr(g, 'sqlite_db'):
+        g.sqlite_db.close()
+
+        
 
 @app.route('/app_init')
 def app_init():
