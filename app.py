@@ -1,12 +1,17 @@
-from flask import Flask, flash, render_template, redirect, g
+from flask import Flask, flash, render_template, redirect, g, url_for
 import sqlite3
+from UserPassword import UserPassword
+
+### LOGIN AND PASSWORD OF THE ADMIN USER ###
+### Login: 0d3Ug ###
+### Password:mimED ###
 
 app = Flask(__name__)
 # secret key is needed to correct work of flashed messages
 app.secret_key = 'secret_key'
 
 # database connection
-app.info = {'db_file':'C:/Users/Krzysiu/Desktop/Python/Python_Flask/Trip_udea_form_exercise_vol_2/data/tripdb.db'}
+app.info = {'db_file':'C:/Users/Krzysiu/Desktop/Python/Python_Flask/Flask-trip_form-project_vol_2/Flask-trip_form-project_vol_2/data/tripdb.db'}
 
 def get_db():
     if not hasattr(g, 'sqlite_db'):
@@ -19,12 +24,31 @@ def get_db():
 def close_db(error):
     if hasattr(g, 'sqlite_db'):
         g.sqlite_db.close()
-
-        
+   
 
 @app.route('/app_init')
 def app_init():
-    return 'not implemented'
+    db = get_db()
+
+    sql_command = "select count(*) as cnt from users where is_admin;"
+    cursor = db.execute(sql_command)
+    is_admin = cursor.fetchone()
+
+    if is_admin['cnt'] < 1:
+        new_admin = UserPassword.get_random_name_and_password()
+        hash_password = new_admin.hash_password()
+
+        sql_command = "insert into users (name, email, password, is_admin) values (?, ?, ?, ?);"
+        db.execute(sql_command, [new_admin.name, 'admin@admin.com', hash_password, True])
+        db.commit()
+
+        flash("You just set new admin on this server! Login: {} and password: {}".format(new_admin.name, new_admin.password))
+        return redirect(url_for('index'))
+
+    else:
+        flash("You already set up the server")
+        return redirect(url_for('index'))
+
 
 @app.route('/')
 def index():

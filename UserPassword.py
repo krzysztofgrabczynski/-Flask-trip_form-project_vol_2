@@ -25,8 +25,8 @@ class UserPassword():
 
     @classmethod
     def get_random_name_and_password(self):
-        random_name = ''.join(random.choice(string.ascii_letters + string.ascii_uppercase + string.digits for i in range(5)))
-        random_password = ''.join(random.choice(string.ascii_letters + string.ascii_uppercase + string.digits for i in range(5)))
+        random_name = ''.join(random.choice(string.ascii_letters + string.ascii_uppercase + string.digits) for i in range(5))
+        random_password = ''.join(random.choice(string.ascii_letters + string.ascii_uppercase + string.digits) for i in range(5))
 
         return UserPassword(random_name, random_password)
 
