@@ -170,10 +170,6 @@ def users():
     else:
         return redirect(url_for('login'))
 
-@app.route('/add_user', methods=['GET', 'POST'])
-def add_user():
-    return 'not implemented'
-
 @app.route('/delete_user/<user_name>')
 def delete_user(user_name):
     return 'not implemented'
