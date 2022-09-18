@@ -91,7 +91,11 @@ def logout():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    return 'not implemented'
+    db = get_db()
+    user_info = UserPassword(session.get('user'))
+    user_info.get_user_info(db)
+
+    return render_template('register.html', user_info=user_info)
 
 @app.route('/new_trip_idea', methods=['GET', 'POST'])
 def new_trip_idea():
