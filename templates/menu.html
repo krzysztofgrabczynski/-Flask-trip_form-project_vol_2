@@ -21,12 +21,16 @@
               <li><a class="dropdown-item" href="{{ url_for('users') }}">Users</a></li>
             </ul>
           </li>
+          {% if not user_info.verify_correct %}
           <li class="nav-item">
             <a class="nav-link {{ 'active' if active_menu == 'login' }}" href="{{ url_for('login') }}" tabindex="-1">Login</a>
           </li>
+          {% endif %}
+          {% if user_info.verify_correct %}
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('logout') }}" tabindex="-1">Logout</a>
+            <a class="nav-link" href="{{ url_for('logout') }}" tabindex="-1">Logout {{ user_info.name }}</a>
           </li>
+          {% endif %}
         </ul>
       </div>
     </div>

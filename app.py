@@ -52,14 +52,20 @@ def app_init():
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    db = get_db()
+    user_info = UserPassword(session.get('user'))
+    user_info.get_user_info(db)
+
+    return render_template('index.html', user_info=user_info)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     db = get_db()
+    user_info = UserPassword(session.get('user'))
+    user_info.get_user_info(db)
 
     if request.method == 'GET':
-        return render_template('login.html', active_menu='login')
+        return render_template('login.html', active_menu='login', user_info=user_info)
     
     else:
         user_name = '' if not 'user_name' in request.form else request.form['user_name']
@@ -74,7 +80,7 @@ def login():
             return redirect(url_for('index'))
         else:
             flash('Login failed, please try again')
-            return render_template('login.html', active_menu='login')
+            return render_template('login.html', active_menu='login', user_info=user_info)
 
 @app.route('/logout')
 def logout():
