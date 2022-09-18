@@ -109,7 +109,7 @@ def register():
         user_record = cursor.fetchone()
         is_user_name_unique = False if user_record != None else True
 
-        ql_command = 'select email from users where email=?;'
+        sql_command = 'select email from users where email=?;'
         cursor = db.execute(sql_command, [user_email])
         user_record = cursor.fetchone()
         is_user_email_unique = False if user_record != None else True
