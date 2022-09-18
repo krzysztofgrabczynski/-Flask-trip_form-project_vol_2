@@ -78,7 +78,11 @@ def login():
 
 @app.route('/logout')
 def logout():
-    return 'not implemented'
+    if 'user' in session:
+        session.pop('user', None)
+        flash('You are logged out')
+    return redirect(url_for('login'))
+
 
 @app.route('/new_trip_idea', methods=['GET', 'POST'])
 def new_trip_idea():
