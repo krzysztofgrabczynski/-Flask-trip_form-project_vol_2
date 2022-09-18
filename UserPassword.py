@@ -5,6 +5,9 @@ class UserPassword():
     def __init__(self, name='', password=''):
         self.name = name
         self.password = password
+        self.email = ''
+        self.is_admin = False
+        self.verify_correct = False
 
     def hash_password(self):
         """Has a password for storing."""
@@ -43,3 +46,16 @@ class UserPassword():
             self.password = None
             return None
 
+    def get_user_info(self, db):
+        sql_command = 'select name, email, is_admin from users where name=?;'
+        cursor = db.execute(sql_command, [self.name])
+        user_record = cursor.fetchone()
+
+        if user_record != None:
+            self.email = user_record['email']
+            self.is_admin = user_record['is_admin']
+            self.verify_correct = True
+        else:
+            self.email = ''
+            self.is_admin = False
+            self.verify_correct = False
