@@ -23,7 +23,7 @@
           </li>
           {% if not user_info.verify_correct %}
           <li class="nav-item">
-            <a class="nav-link {{ 'active' if active_menu == 'login' }}" href="{{ url_for('login') }}" tabindex="-1">Login</a>
+            <a class="nav-link {{ 'active' if active_menu == 'login' }}" href="{{ url_for('login') }}" tabindex="-1">Login/Registration</a>
           </li>
           {% endif %}
           {% if user_info.verify_correct %}

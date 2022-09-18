@@ -95,7 +95,48 @@ def register():
     user_info = UserPassword(session.get('user'))
     user_info.get_user_info(db)
 
-    return render_template('register.html', user_info=user_info)
+    message = []
+
+    if request.method == 'GET':
+        return render_template('register.html', active_menu='login', user_info=user_info)
+    else:
+        user_name = '' if not 'user_name' in request.form else request.form['user_name']
+        user_email = '' if not 'email' in request.form else request.form['email']
+        user_password = '' if not 'user_pass' in request.form else request.form['user_pass']
+
+        sql_command = 'select name from users where name=?;'
+        cursor = db.execute(sql_command, [user_name])
+        user_record = cursor.fetchone()
+        is_user_name_unique = False if user_record != None else True
+
+        ql_command = 'select email from users where email=?;'
+        cursor = db.execute(sql_command, [user_email])
+        user_record = cursor.fetchone()
+        is_user_email_unique = False if user_record != None else True
+
+        if user_name == '':
+            message.append('name cannot be empty')
+        if user_email == '':
+            message.append('email cannot be empty')
+        if user_password == '':
+            message.append('password cannot be empty')
+        if not is_user_name_unique:
+            message.append('user with the name {} already exists'.format(user_name))
+        if not is_user_email_unique:
+            message.append('user with the email {} alresdy exists'.format(user_email))
+
+        if not message:
+            new_user = UserPassword(user_name, user_password)
+            sql_command = 'insert into users (name, email, password, is_admin) values (?, ?, ?, ?);'
+            db.execute(sql_command, [user_name, user_email, new_user.hash_password(), False])
+            db.commit()
+            
+            flash('User {} was successfully created.'.format(user_name))
+            return redirect(url_for('login'))
+
+        else:
+            flash('Failure while creating user: {}'.format(', '.join(message)))
+            return render_template('register.html', active_menu='login', user_info=user_info)
 
 @app.route('/new_trip_idea', methods=['GET', 'POST'])
 def new_trip_idea():
