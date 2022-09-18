@@ -56,7 +56,7 @@ def index():
 
 @app.route('/login')
 def login():
-    return 'not implemented'
+    return render_template('login.html')
 
 @app.route('/logout')
 def logout():
