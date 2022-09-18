@@ -166,6 +166,9 @@ def users():
         users_record = cursor.fetchall()
 
         return render_template('users.html', active_menu='users', users=users_record, user_info=user_info)
+        
+    else:
+        return redirect(url_for('login'))
 
 @app.route('/add_user', methods=['GET', 'POST'])
 def add_user():
