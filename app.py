@@ -1,4 +1,4 @@
-from flask import Flask, flash, render_template, redirect, g, url_for
+from flask import Flask, flash, render_template, redirect, g, url_for, request, session
 import sqlite3
 from UserPassword import UserPassword
 
@@ -54,9 +54,27 @@ def app_init():
 def index():
     return render_template('index.html')
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    return render_template('login.html', active_menu='login')
+    db = get_db()
+
+    if request.method == 'GET':
+        return render_template('login.html', active_menu='login')
+    
+    else:
+        user_name = '' if not 'user_name' in request.form else request.form['user_name']
+        user_pass = '' if not 'user_pass' in request.form else request.form['user_pass']
+
+        user = UserPassword(user_name, user_pass)
+        user_verify = user.verify_login(db)
+        
+        if user_verify != None:
+            session['user'] = user_name
+            flash('Login successful, welcome!')
+            return redirect(url_for('index'))
+        else:
+            flash('Login failed, please try again')
+            return render_template('login.html', active_menu='login')
 
 @app.route('/logout')
 def logout():

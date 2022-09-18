@@ -1,5 +1,6 @@
 import random, string, hashlib, binascii
 
+
 class UserPassword():
     def __init__(self, name='', password=''):
         self.name = name
@@ -30,4 +31,15 @@ class UserPassword():
 
         return UserPassword(random_name, random_password)
 
+    def verify_login(self, db):
+        sql_command = 'select name, email, password, is_admin from users where name=?;'
+        cursor = db.execute(sql_command, [self.name])
+        user_record = cursor.fetchone()
+
+        if user_record != None and self.verify_password(user_record['password'], self.password):
+            return user_record
+        else:
+            self.user = None
+            self.password = None
+            return None
 
