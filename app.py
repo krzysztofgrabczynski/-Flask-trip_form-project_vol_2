@@ -89,6 +89,9 @@ def logout():
         flash('You are logged out')
     return redirect(url_for('login'))
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    return 'not implemented'
 
 @app.route('/new_trip_idea', methods=['GET', 'POST'])
 def new_trip_idea():
