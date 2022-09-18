@@ -156,7 +156,16 @@ def delete_trip_idea(trip_idea_id):
 
 @app.route('/users')
 def users():
-    return 'not implemented'
+    db = get_db()
+    user_info = UserPassword(session.get('user'))
+    user_info.get_user_info(db)
+
+    if user_info.is_admin:
+        sql_command = 'select name, email, is_admin from users;'
+        cursor = db.execute(sql_command)
+        users_record = cursor.fetchall()
+
+        return render_template('users.html', active_menu='users', users=users_record, user_info=user_info)
 
 @app.route('/add_user', methods=['GET', 'POST'])
 def add_user():

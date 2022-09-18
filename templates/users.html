@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Users
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">User name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Is admin</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        <a href="#">
+                            {% if user.is_admin %}
+                                &check;
+                            {% else %}
+                                &#x25a2;
+                            {% endif %}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="#" class="btn btn-success btn-sm" role="button">Edit</a>
+                        <a href="#" class="btn btn-danger btn-sm delete-confirm" role="button">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+   </div>
+
+{% endblock %} 
