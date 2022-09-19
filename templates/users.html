@@ -29,7 +29,7 @@
                         </a>
                     </td>
                     <td>
-                        <a href="#" class="btn btn-success btn-sm" role="button">Edit</a>
+                        <a href="{{ url_for('edit_user_by_admin', user_name=user.name) }}" class="btn btn-success btn-sm" role="button">Edit</a>
                         <a href="#" class="btn btn-danger btn-sm delete-confirm" role="button">Delete</a>
                     </td>
                 </tr>

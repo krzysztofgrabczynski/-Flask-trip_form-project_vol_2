@@ -4,7 +4,7 @@ from UserPassword import UserPassword
 
 ### LOGIN AND PASSWORD OF THE ADMIN USER ###
 ### Login: 0d3Ug ###
-### Password:mimED ###
+### Password:admin ###
 
 app = Flask(__name__)
 # secret key is needed to correct work of flashed messages
@@ -160,7 +160,7 @@ def users():
     user_info = UserPassword(session.get('user'))
     user_info.get_user_info(db)
 
-    if user_info.is_admin:
+    if user_info.is_admin and user_info.verify_correct:
         sql_command = 'select name, email, is_admin from users;'
         cursor = db.execute(sql_command)
         users_record = cursor.fetchall()
@@ -174,9 +174,52 @@ def users():
 def delete_user(user_name):
     return 'not implemented'
 
-@app.route('/edit_user/<user_name>', methods=['GET', 'POST'])
-def edit_user(user_name):
-    return 'not implemented'   
+@app.route('/edit_user_by_admin/<user_name>', methods=['GET', 'POST'])
+def edit_user_by_admin(user_name):
+    db = get_db()
+    user_info = UserPassword(session.get('user'))
+    user_info.get_user_info(db)
+
+    if not user_info.is_admin or not user_info.verify_correct:
+        return redirect(url_for('login'))
+    
+    sql_command = 'select name, email from users where name=?;'
+    cursor = db.execute(sql_command, [user_name])
+    user_record = cursor.fetchone()
+
+    if user_record == None:
+        flash('No such user')
+        return redirect(url_for('users'))
+
+
+    if request.method == 'GET':
+        return render_template('edit_user_by_admin.html', active_menu='users', user_info=user_info, user=user_record)   
+    else:
+        new_email = '' if not 'email' in request.form else request.form['email']
+        new_password = '' if not 'user_pass' in request.form else request.form['user_pass'] 
+
+        if new_email != user_record['email']:
+            sql_command = 'select count(*) as cnt from users where email=?'
+            cursor = db.execute(sql_command, [new_email])
+            check_email_record = cursor.fetchone()
+
+            if check_email_record['cnt'] == 0:
+                sql_command = 'update users set email = ? where name = ?'
+                db.execute(sql_command, [new_email, user_name])
+                db.commit()
+                flash('Email was updated successfully')
+            else:
+                flash('User with the email {} alresdy exists'.format(new_email))
+                return render_template('edit_user_by_admin.html', active_menu='users', user_info=user_info, user=user_record)
+
+        if new_password:
+            user_pass = UserPassword(user_name, new_password)
+            sql_command = 'update users set password = ? where name = ?;'
+            db.execute(sql_command, [user_pass.hash_password(), user_name])
+            db.commit()
+            flash('Password was updated successfully')
+
+        return redirect(url_for('users'))
 
 
 if __name__ == '__main__':
