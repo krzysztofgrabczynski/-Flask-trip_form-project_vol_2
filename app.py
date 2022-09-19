@@ -64,6 +64,9 @@ def login():
     user_info = UserPassword(session.get('user'))
     user_info.get_user_info(db)
 
+    if user_info.verify_correct:
+        return redirect(url_for('index'))
+
     if request.method == 'GET':
         return render_template('login.html', active_menu='login', user_info=user_info)
     
@@ -221,9 +224,20 @@ def edit_user_by_admin(user_name):
 
         return redirect(url_for('users'))
 
-@app.route('/edit_account/<user_name>', methods=['GET', 'POST'])
-def edit_account(user_name):
-    return 'not implemented'
+@app.route('/edit_account', methods=['GET', 'POST'])
+def edit_account():
+    db = get_db()
+    user_info = UserPassword(session.get('user'))
+    user_info.get_user_info(db)
+
+    if not user_info.verify_correct or user_info.is_admin:
+        return redirect(url_for('login'))
+
+    if request.method == 'GET':
+        return render_template('edit_account.html', active_menu='edit_account', user_info=user_info)
+
+    else:
+        return 'not implemented'
 
 
 if __name__ == '__main__':
