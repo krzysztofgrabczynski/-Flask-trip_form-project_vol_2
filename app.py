@@ -175,7 +175,22 @@ def users():
 
 @app.route('/delete_user/<user_name>')
 def delete_user(user_name):
-    return 'not implemented'
+    db = get_db()
+    user_info = UserPassword(session.get('user'))
+    user_info.get_user_info(db)
+
+    if not user_info.verify_correct or not user_info.is_admin:
+        return redirect(url_for('login'))
+    
+    sql_command = 'delete from users where name=? and name <> ?;'
+    db.execute(sql_command, [user_name, user_info.name])
+    db.commit()
+
+    if user_name == user_info.name:
+        flash('Cannot delete a user')
+    else:
+        flash("User {} has been deleted".format(user_name))
+    return redirect(url_for('users'))
 
 @app.route('/edit_user_by_admin/<user_name>', methods=['GET', 'POST'])
 def edit_user_by_admin(user_name):
