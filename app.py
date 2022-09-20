@@ -204,9 +204,9 @@ def edit_user_by_admin(user_name):
         if new_email != user_record['email']:
             sql_command = 'select count(*) as cnt from users where email=?'
             cursor = db.execute(sql_command, [new_email])
-            check_email_record = cursor.fetchone()
+            check_email_unique = cursor.fetchone()
 
-            if check_email_record['cnt'] == 0:
+            if check_email_unique['cnt'] == 0:
                 sql_command = 'update users set email = ? where name = ?'
                 db.execute(sql_command, [new_email, user_name])
                 db.commit()
@@ -235,9 +235,32 @@ def edit_account():
 
     if request.method == 'GET':
         return render_template('edit_account.html', active_menu='edit_account', user_info=user_info)
-
     else:
-        return 'not implemented'
+        new_email = '' if not 'email' in request.form else request.form['email']
+        new_password = '' if not 'user_pass' in request.form else request.form['user_pass']
+
+        if new_email != user_info.email:
+            sql_command = 'select count (*) as cnt from users where email=?;'
+            cursor = db.execute(sql_command, [new_email])
+            check_email_unique = cursor.fetchone()
+
+            if check_email_unique['cnt'] == 0:
+                sql_command = 'update users set email=? where name=?;'
+                db.execute(sql_command, [new_email, user_info.name])
+                db.commit()
+                flash('Email was updated successfully')
+            else:
+                flash('User with the email {} alresdy exists'.format(new_email))
+                return render_template('edit_account.html', active_menu='edit_account', user_info=user_info)
+
+        if new_password:
+            user_pass = UserPassword(user_info.name, new_password)
+            sql_command = 'update users set password=? where name=?;' 
+            db.execute(sql_command, [user_pass.hash_password(), user_info.name])
+            db.commit()
+            flash('Password was updated successfully')
+
+        return redirect(url_for('index'))
 
 
 if __name__ == '__main__':
