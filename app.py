@@ -252,6 +252,7 @@ def edit_account():
         return render_template('edit_account.html', active_menu='edit_account', user_info=user_info)
     else:
         new_email = '' if not 'email' in request.form else request.form['email']
+        old_password = '' if not 'user_old_pass' in request.form else request.form['user_old_pass']
         new_password = '' if not 'user_pass' in request.form else request.form['user_pass']
 
         if new_email != user_info.email:
@@ -268,15 +269,25 @@ def edit_account():
                 flash('User with the email {} alresdy exists'.format(new_email))
                 return render_template('edit_account.html', active_menu='edit_account', user_info=user_info)
 
-        if new_password:
-            user_pass = UserPassword(user_info.name, new_password)
-            sql_command = 'update users set password=? where name=?;' 
-            db.execute(sql_command, [user_pass.hash_password(), user_info.name])
-            db.commit()
-            flash('Password was updated successfully')
-
+        if old_password:
+            user_info.password = old_password
+            if user_info.verify_password(db):
+                if new_password:
+                    print("new_pass")
+                    user_pass = UserPassword(user_info.name, new_password)
+                    sql_command = 'update users set password=? where name=?;' 
+                    db.execute(sql_command, [user_pass.hash_password(), user_info.name])
+                    db.commit()
+                    flash('Password was updated successfully')
+            else:
+                flash('The old password is incorrect')
+                return render_template('edit_account.html', active_menu='edit_account', user_info=user_info)
+        elif new_password:
+            flash('You have to enter the old password')
+            return render_template('edit_account.html', active_menu='edit_account', user_info=user_info)
+            
         return redirect(url_for('index'))
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
