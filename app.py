@@ -254,6 +254,7 @@ def edit_account():
         new_email = '' if not 'email' in request.form else request.form['email']
         old_password = '' if not 'user_old_pass' in request.form else request.form['user_old_pass']
         new_password = '' if not 'user_pass' in request.form else request.form['user_pass']
+        confirm_password = '' if not 'user_pass_confirm' in request.form else request.form['user_pass_confirm'] 
 
         if new_email != user_info.email:
             sql_command = 'select count (*) as cnt from users where email=?;'
@@ -272,13 +273,16 @@ def edit_account():
         if old_password:
             user_info.password = old_password
             if user_info.verify_password(db):
-                if new_password:
+                if new_password and new_password == confirm_password:
                     print("new_pass")
                     user_pass = UserPassword(user_info.name, new_password)
                     sql_command = 'update users set password=? where name=?;' 
                     db.execute(sql_command, [user_pass.hash_password(), user_info.name])
                     db.commit()
                     flash('Password was updated successfully')
+                elif new_password != confirm_password:
+                    flash('New password and Confirm password must be the same')
+                    return render_template('edit_account.html', active_menu='edit_account', user_info=user_info)
             else:
                 flash('The old password is incorrect')
                 return render_template('edit_account.html', active_menu='edit_account', user_info=user_info)
