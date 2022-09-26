@@ -239,6 +239,10 @@ def edit_user_by_admin(user_name):
 
         return redirect(url_for('users'))
 
+@app.route('/edit_user_status/<user_name>')
+def edit_user_status(user_name):
+    return 'not implemented'
+
 @app.route('/edit_account', methods=['GET', 'POST'])
 def edit_account():
     db = get_db()
