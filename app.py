@@ -174,7 +174,17 @@ def new_trip_idea():
             flash('You must fill in the blanks')
             return render_template('new_trip_form.html', active_menu='new_trip_idea', user_info=user_info)
 
-        sql_command = 'insert into trip_ideas (name, email, description, completness, contact, trip_author) values(?, ?, ?, ?, ?, ?);'
+        # checking if name of the trip is unique
+        sql_command = 'select count (*) as cnt from trip_ideas where name=?;'
+        cursor = db.execute(sql_command, [trip_name])
+        trip_name_unique_check = cursor.fetchone()
+        if trip_name_unique_check['cnt'] != 0:
+            flash('Name of the trip must be unique! You have to change it')
+            return render_template('new_trip_form.html', active_menu='new_trip_idea', user_info=user_info)
+
+
+        sql_command = '''insert into trip_ideas (name, email, description, completness, contact, trip_author) 
+                        values(?, ?, ?, ?, ?, ?);'''
         db.execute(sql_command, [trip_name, user_info.email, description, completness, contact, user_info.name])
         db.commit()
 
