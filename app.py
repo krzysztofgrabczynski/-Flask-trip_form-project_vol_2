@@ -143,7 +143,28 @@ def register():
 
 @app.route('/new_trip_idea', methods=['GET', 'POST'])
 def new_trip_idea():
-    return 'not implemented'
+    db = get_db()
+    user_info = UserPassword(session.get('user'))
+    user_info.get_user_info(db)
+    
+    if request.method == 'GET':
+        return render_template('new_trip_form.html', active_menu='new_trip_idea', user_info=user_info)
+    else:
+        trip_name = '' if not 'trip_name' in request.form else request.form['trip_name']
+        description = '' if not 'description' in request.form else request.form['description']
+        completness = 'option2' if not 'completness' in request.form else request.form['completness']
+        contact = False if not 'gridCheck1' in request.form else True
+
+        if not trip_name or not description:
+            flash('You must fill in the blanks')
+            return render_template('new_trip_form.html', active_menu='new_trip_idea', user_info=user_info)
+
+        sql_command = 'insert into trip_ideas (name, email, description, completness, contact, trip_author) values(?, ?, ?, ?, ?, ?);'
+        db.execute(sql_command, [trip_name, user_info.email, description, completness, contact, user_info.name])
+        db.commit()
+
+        flash('You added new trip idea!')
+        return redirect(url_for('index'))
 
 @app.route('/history')
 def history():
