@@ -241,7 +241,23 @@ def edit_user_by_admin(user_name):
 
 @app.route('/edit_user_status/<user_name>')
 def edit_user_status(user_name):
-    return 'not implemented'
+    db = get_db()
+    user_info = UserPassword(session.get('user'))
+    user_info.get_user_info(db)
+
+    if not user_info.is_admin or not user_info.verify_correct:
+        return redirect(url_for('login'))
+
+    if user_name == user_info.name:
+        flash('You cannot change your status')
+        return redirect(url_for('users'))
+    
+    sql_command = 'update users set is_admin=(is_admin + 1)%2 where name=?;' 
+    db.execute(sql_command, [user_name])
+    db.commit()
+    
+    flash("{}'s user status has changed".format(user_name))
+    return redirect(url_for('users'))
 
 @app.route('/edit_account', methods=['GET', 'POST'])
 def edit_account():
