@@ -50,13 +50,28 @@ def app_init():
         return redirect(url_for('index'))
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
     db = get_db()
     user_info = UserPassword(session.get('user'))
     user_info.get_user_info(db)
 
-    return render_template('index.html', user_info=user_info)
+    cursor = db.execute('select name from trip_ideas;')
+    trip_list = cursor.fetchall()
+    
+    if request.method == 'GET':
+        return render_template('index.html', user_info=user_info, trip_name_list=trip_list)
+    else:
+        trip_option = '' if not 'trip_option' in request.form else request.form['trip_option']
+
+        if trip_option == '' or trip_option == 'label':
+            return redirect(url_for('index'))
+        
+        sql_command = 'select name, email, description, completness, contact, trip_idea_date, trip_author from trip_ideas where name=?;'
+        cursor = db.execute(sql_command, [trip_option])
+        trip_details = cursor.fetchone()
+        
+        return render_template('trip_idea_details.html', user_info=user_info, trip_details=trip_details)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
