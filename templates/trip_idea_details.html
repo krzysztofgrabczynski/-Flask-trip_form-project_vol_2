@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %} Trip details {% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row mb-3"></div>
+    <div class="row mb-3">
+
+    <label for="trip_name" class="col-sm-2 col-form-label">Trip name</label>
+    <div class="col-sm-10">
+        <input type="text" class="form-control" id="trip_name" name="trip_name" value="{{ trip_details.name }}" disabled>
+    </div>
+    </div>
+
+    <div class="row mb-3">
+    <label for="email" class="col-sm-2 col-form-label">Contact email</label>
+    <div class="col-sm-10">
+        <input type="email" class="form-control" id="email" name="email" value="{{ trip_details.email }}" disabled>
+    </div>
+    </div>
+
+    <div class="row mb-3">
+    <label for="description" class="col-sm-2 col-form-label">Short description</label>
+    <div class="col-sm-10">
+        <textarea class="form-control" id="description" name="description" rows="3" disabled>{{ trip_details.description }}</textarea>
+    </div>
+    </div>
+
+    <div class="row mb-3">
+        <label for="email" class="col-sm-2 col-form-label">Date of adding the trip idea</label>
+        <div class="col-sm-10">
+            <input type="date" class="form-control" id="trip_idea_date" name="trip_idea_date" value="{{ trip_details.trip_idea_date }}" disabled>
+        </div>
+        </div>
+
+    <fieldset class="row mb-3">
+    <legend class="col-form-label col-sm-2 pt-0">Completness</legend>
+    <div class="col-sm-10">
+        <div class="form-check">
+        <input class="form-check-input" type="radio" name="completness" id="completness_1" value="option1" {{ 'checked' if trip_details.completness == 'option1' }} disabled>
+        <label class="form-check-label" for="completness_1">
+            Yes - the idea is complete including price proposal
+        </label>
+        </div>
+        <div class="form-check">
+        <input class="form-check-input" type="radio" name="completness" id="completness_2" value="option2" {{ 'checked' if trip_details.completness == 'option2' }} disabled>
+        <label class="form-check-label" for="completness_2">
+            No - this is just pure idea
+        </label>
+        </div>
+    </div>
+    </fieldset>
+
+    <div class="row mb-3">
+    <div class="col-sm-2">May we contact you for details?</div>
+    <div class="col-sm-8">
+        <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="gridCheck1" name="gridCheck1" {{ 'checked' if trip_details.contact == True }} disabled>
+        <label class="form-check-label" for="gridCheck1">Yes, I agree</label>
+        </div>
+    </div>
+    </div>
+
+</div>
+
+{% endblock %}
