@@ -20,7 +20,7 @@
                     <td>{{ user.name }}</td>
                     <td>{{ user.email }}</td>
                     <td>
-                        <a href="#">
+                        <a href="{{ url_for('edit_user_status', user.name) }}">
                             {% if user.is_admin %}
                                 &check;
                             {% else %}
