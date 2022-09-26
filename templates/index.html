@@ -16,9 +16,9 @@
     <div>
         <label for="trip_name" class="form-label">Trip name</label>
         <select class="form-select" name="trip_option" aria-label="Default select example">
-            <option selected>Choose a trip</option>
+            <option value ='label' selected>Choose a trip</option>
             {% for trip in trip_name_list: %}
-                <option value="{{trip}}">{{ trip }}</option>
+                <option value="{{ trip.name }}">{{ trip.name }}</option>
             {% endfor %}
         </select>
     </div>
