@@ -198,9 +198,17 @@ def trips():
     user_info = UserPassword(session.get('user'))
     user_info.get_user_info(db)
 
-    if not user_info.verify_correct or user_info.is_admin:
+    if not user_info.verify_correct:
         return redirect(url_for('login'))
+    
+    # path for admin user
+    if user_info.is_admin:
+        cursor = db.execute('select id, name, email, description, completness, contact, trip_idea_date, trip_author from trip_ideas;')
+        trips_record = cursor.fetchall()
 
+        return render_template('trips_admin_path.html', active_menu='trips', user_info=user_info, trips=trips_record)
+
+    # path for normal user
     sql_command = 'select id, name, email, description, completness, contact, trip_idea_date from trip_ideas where trip_author=?;'
     cursor = db.execute(sql_command, [user_info.name])
     trips_record = cursor.fetchall()
@@ -253,10 +261,23 @@ def delete_trip_idea(trip_idea_id):
     user_info = UserPassword(session.get('user'))
     user_info.get_user_info(db)    
 
-    sql_command = 'delete from trip_ideas where id=?;'
-    db.execute(sql_command, [trip_idea_id])
-    db.commit()
+    if not user_info.verify_correct:
+        return redirect(url_for('login'))
 
+    # path for admin user
+    if user_info.is_admin:
+        sql_command = 'delete from trip_ideas where id=?;'
+        db.execute(sql_command, [trip_idea_id])
+        db.commit()
+
+        flash('Successfully deleted trip idea')
+        return redirect(url_for('trips'))
+    
+    # path for normla user
+    sql_command = 'delete from trip_ideas where id=? and trip_author=?;'
+    db.execute(sql_command, [trip_idea_id, user_info.name])
+    db.commit()
+    
     flash('Successfully deleted trip idea')
     return redirect(url_for('trips'))
 
