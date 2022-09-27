@@ -1,5 +1,6 @@
 from flask import Flask, flash, render_template, redirect, g, url_for, request, session
 import sqlite3
+from datetime import date
 from UserPassword import UserPassword
 
 ### LOGIN AND PASSWORD OF THE ADMIN USER ###
@@ -208,7 +209,43 @@ def trips():
 
 @app.route('/edit_trip_idea/<int:trip_idea_id>', methods=['GET', 'POST'])
 def edit_trip_idea(trip_idea_id):
-    return 'not implemented'
+    db = get_db()
+    user_info = UserPassword(session.get('user'))
+    user_info.get_user_info(db)
+
+    sql_command = 'select id, name, email, description, completness, contact from trip_ideas where id=?;'
+    cursor = db.execute(sql_command, [trip_idea_id])
+    trip_record = cursor.fetchone()
+
+    if request.method == 'GET':
+        return render_template('edit_trip_idea.html', active_menu='trips', user_info=user_info, trip_details=trip_record)
+    else:
+        trip_name = trip_record['name'] if not 'trip_name' in request.form else request.form['trip_name']
+        description = trip_record['description'] if not 'description' in request.form else request.form['description']
+        completness = trip_record['completness'] if not 'completness' in request.form else request.form['completness']
+        contact = False if not 'gridCheck1' in request.form else True
+
+        print(trip_record['contact'])
+
+        if not trip_name or not description:
+            flash('You must fill in the blanks')
+            return render_template('edit_trip_idea.html', active_menu='trips', user_info=user_info, trip_details=trip_record)
+
+        # checking if name of the trip is unique
+        if trip_name != trip_record['name']:
+            sql_command = 'select count (*) as cnt from trip_ideas where name=?;'
+            cursor = db.execute(sql_command, [trip_name])
+            trip_name_unique_check = cursor.fetchone()
+            if trip_name_unique_check['cnt'] != 0:
+                flash('Name of the trip must be unique! You have to change it')
+                return render_template('edit_trip_idea.html', active_menu='trips', user_info=user_info, trip_details=trip_record)
+
+        sql_command = 'update trip_ideas set name=?, description=?, completness=?, contact=?, trip_idea_date=? where id=?;'
+        db.execute(sql_command, [trip_name, description, completness, contact, date.today(), trip_idea_id])
+        db.commit()
+
+        flash('Successfully updated trip idea')
+        return redirect(url_for('trips'))
 
 @app.route('/delete_trip_idea/<int:trip_idea_id>')
 def delete_trip_idea(trip_idea_id):
