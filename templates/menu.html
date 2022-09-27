@@ -11,9 +11,16 @@
             <a class="nav-link {{ 'active' if active_menu == 'new_trip_idea' }}" href="{{ url_for('new_trip_idea') }}">New trip</a>
           </li>
           {% endif %}
+          {% if user_info.verify_correct and not user_info.is_admin %}
           <li class="nav-item">
             <a class="nav-link {{ 'active' if active_menu == 'trips' }}" href="{{ url_for('trips') }}">Trips</a>
           </li>
+          {% endif %}
+          {% if user_info.verify_correct and user_info.is_admin %}
+          <li class="nav-item">
+            <a class="nav-link {{ 'active' if active_menu == 'trips' }}" href="{{ url_for('trips') }}">All trips</a>
+          </li>
+          {% endif %}
           {% if user_info.is_admin %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle {{ 'active' if active_menu == 'users' }}" href="#" id="navbarDropdown" role="button"
