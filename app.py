@@ -212,7 +212,7 @@ def edit_trip_idea(trip_idea_id):
     db = get_db()
     user_info = UserPassword(session.get('user'))
     user_info.get_user_info(db)
-
+    
     sql_command = 'select id, name, email, description, completness, contact from trip_ideas where id=?;'
     cursor = db.execute(sql_command, [trip_idea_id])
     trip_record = cursor.fetchone()
@@ -249,7 +249,16 @@ def edit_trip_idea(trip_idea_id):
 
 @app.route('/delete_trip_idea/<int:trip_idea_id>')
 def delete_trip_idea(trip_idea_id):
-    return 'not implemented'    
+    db = get_db()
+    user_info = UserPassword(session.get('user'))
+    user_info.get_user_info(db)    
+
+    sql_command = 'delete from trip_ideas where id=?;'
+    db.execute(sql_command, [trip_idea_id])
+    db.commit()
+
+    flash('Successfully deleted trip idea')
+    return redirect(url_for('trips'))
 
 @app.route('/users')
 def users():
