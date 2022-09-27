@@ -191,9 +191,20 @@ def new_trip_idea():
         flash('You added new trip idea!')
         return redirect(url_for('index'))
 
-@app.route('/history')
-def history():
-    return 'not implemented'
+@app.route('/trips')
+def trips():
+    db = get_db()
+    user_info = UserPassword(session.get('user'))
+    user_info.get_user_info(db)
+
+    if not user_info.verify_correct or user_info.is_admin:
+        return redirect(url_for('login'))
+
+    sql_command = 'select id, name, email, description, completness, contact, trip_idea_date from trip_ideas where trip_author=?;'
+    cursor = db.execute(sql_command, [user_info.name])
+    trips_record = cursor.fetchall()
+
+    return render_template('trips.html', active_menu='trips', user_info=user_info, trips=trips_record)
 
 @app.route('/edit_trip_idea/<int:trip_idea_id>', methods=['GET', 'POST'])
 def edit_trip_idea(trip_idea_id):
