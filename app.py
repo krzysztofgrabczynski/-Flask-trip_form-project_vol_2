@@ -122,6 +122,7 @@ def register():
         user_name = '' if not 'user_name' in request.form else request.form['user_name']
         user_email = '' if not 'email' in request.form else request.form['email']
         user_password = '' if not 'user_pass' in request.form else request.form['user_pass']
+        confirm_password = '' if not 'user_pass_confirm' in request.form else request.form['user_pass_confirm'] 
 
         sql_command = 'select name from users where name=?;'
         cursor = db.execute(sql_command, [user_name])
@@ -137,12 +138,14 @@ def register():
             message.append('name cannot be empty')
         if user_email == '':
             message.append('email cannot be empty')
-        if user_password == '':
+        if user_password == '' or confirm_password == '':
             message.append('password cannot be empty')
         if not is_user_name_unique:
             message.append('user with the name {} already exists'.format(user_name))
         if not is_user_email_unique:
             message.append('user with the email {} alresdy exists'.format(user_email))
+        if user_password != confirm_password:
+            message.append('Password and Confirm password must be the same')
 
         if not message:
             new_user = UserPassword(user_name, user_password)
