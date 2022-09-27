@@ -221,6 +221,9 @@ def edit_trip_idea(trip_idea_id):
     user_info = UserPassword(session.get('user'))
     user_info.get_user_info(db)
     
+    if not user_info.verify_correct:
+        return redirect(url_for('login'))
+
     sql_command = 'select id, name, email, description, completness, contact from trip_ideas where id=?;'
     cursor = db.execute(sql_command, [trip_idea_id])
     trip_record = cursor.fetchone()
