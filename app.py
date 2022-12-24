@@ -2,6 +2,7 @@ from flask import Flask, flash, render_template, redirect, g, url_for, request, 
 import sqlite3
 from datetime import date
 from UserPassword import UserPassword
+from os import path
 
 ### LOGIN AND PASSWORD OF THE ADMIN USER ###
 ### Login: 0d3Ug ###
@@ -11,8 +12,11 @@ app = Flask(__name__)
 # secret key is needed to correct work of flashed messages
 app.secret_key = 'secret_key'
 
+# dynamic database path
+database_dirpath = path.dirname(path.abspath(__file__))
+
 # database connection
-app.info = {'db_file':'C:/Users/Krzysiu/Desktop/Python/Python_Flask/Flask-trip_form-project_vol_2/Flask-trip_form-project_vol_2/data/tripdb.db'}
+app.info = {'db_file':f'{database_dirpath}/data/tripdb.db'}
 
 def get_db():
     if not hasattr(g, 'sqlite_db'):
