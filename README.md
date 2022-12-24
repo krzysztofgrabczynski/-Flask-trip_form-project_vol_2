@@ -17,12 +17,10 @@ This version is more advanced than the previous one and has new features:
   - [x] edit account by user
   - [x] checking if the name and email are unique
   - [x] checking if the specific user can edit specific trip form
-  - [x] checking if the user is logged in and modifying the appearance of the menu according this
-- [x] edit, delete of the trip form (accordingly if the user has permission, is a guest, or is an administrator
-- [x] 
-- [x] 
-- [x] 
-- [x] 
+  - [x] checking if the user is logged in and modifying the appearance of the menu according this information
+- [x] edit, delete of the trip form (accordingly if the user has permission, is a guest, or is an administrator)
+- [x] changing user permissions by admin
+
 
 ## <p align=center> How to run the application </p>
 - Copy the repository 
